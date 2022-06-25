@@ -1,5 +1,14 @@
 use bevy::prelude::*;
 
+pub struct HelloPlugin;
+
+impl Plugin for HelloPlugin {
+    fn build(&self, app: &mut App){
+        app.add_startup_system(add_people)
+            .add_system(greet_people);
+    }
+}
+
 #[derive(Component)]
 struct Person;
 #[derive(Component)]
@@ -12,10 +21,15 @@ fn add_people(mut commands: Commands) {
         .insert(Name("Tombstone".to_string()));
 }
 
-fn hello_world() {
-    println!("hello, world!")
+fn greet_people(query: Query<&Name, With<Person>>) {
+    for name in query.iter() {
+        println!("Hello {}!", name.0)
+    }
 }
 
 fn main() {
-    App::new().add_system(hello_world).run();
+    App::new()
+        .add_plugins(DefaultPlugins)
+        .add_plugin(HelloPlugin)
+        .run();
 }
